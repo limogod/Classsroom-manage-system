@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24美术2班 常规管理系统 v9.0</title>
+    <link rel="stylesheet" href="styles.css?v=20260502-fix2">
+    <script src="vendor/html2canvas.min.js"></script>
+    <script defer src="app.js?v=20260502-fix2"></script>
+</head>
+<body>
+    <div id="welcomeScreen" class="welcome-screen" aria-live="polite">
+        <div class="welcome-card">
+            <p class="eyebrow">Welcome</p>
+            <h2>24美术2班常规管理系统</h2>
+            <p>座位、清洁、抽选与班级配置已经就绪。</p>
+        </div>
+    </div>
+
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="title-block">
+                <p class="eyebrow">24美术2班</p>
+                <h1>常规管理系统</h1>
+        
+            </div>
+            <div class="top-actions">
+                <button class="mini-btn" type="button" data-action="select-backup-file">保存路径</button>
+                <button class="mini-btn" type="button" data-action="export-data">导出</button>
+                <button class="mini-btn" type="button" data-action="import-data">恢复</button>
+                <input id="dataFileInput" type="file" accept=".json" hidden>
+            </div>
+        </header>
+
+        <nav class="module-nav" aria-label="系统模块">
+            <button class="nav-item active" type="button" data-panel-target="seats">座位表</button>
+            <button class="nav-item" type="button" data-panel-target="cleaning">清洁管理</button>
+            <button class="nav-item" type="button" data-panel-target="picker">随机抽选</button>
+            <button class="nav-item" type="button" data-panel-target="settings">设置中心</button>
+        </nav>
+
+        <main>
+            <section id="seatsPanel" class="panel active" data-panel="seats">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Seating</p>
+                        <h2>座位表</h2>
+                    </div>
+                    <div class="action-row">
+                        <button class="primary-btn" type="button" data-action="rotate-seats">一键轮换</button>
+                        <button class="soft-btn" type="button" data-action="randomize-seats">随机座位</button>
+                        <button class="soft-btn" type="button" data-action="export-seat-image">保存图片</button>
+                    </div>
+                </div>
+                <div class="summary-strip">
+                    <span id="seatStats">39名学生</span>
+                    <span id="seatSettingsSummary">默认轮换模式</span>
+                    <span>点击座位右上角可锁定</span>
+                </div>
+                <div id="seatExportArea" class="export-surface seat-export">
+                    <div id="seatMap" class="seat-map" aria-label="座位表"></div>
+                </div>
+            </section>
+
+            <section id="cleaningPanel" class="panel" data-panel="cleaning">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">6S Cleaning</p>
+                        <h2>清洁表</h2>
+                    </div>
+                    <div class="action-row">
+                        <button class="primary-btn" type="button" data-action="generate-cleaning">重新生成</button>
+                        <button class="soft-btn" type="button" data-action="rotate-cleaning-week">轮换一周</button>
+                        <button class="soft-btn" type="button" data-action="export-cleaning-image">保存图片</button>
+                    </div>
+                </div>
+                <div class="summary-strip">
+                    <span id="cleaningStats">教室6S + 画室卫生</span>
+                    <span>拖拽姓名调整岗位</span>
+                    <span>组内点击“组员/组长”调整小组长</span>
+                </div>
+                <div class="cleaning-layout">
+                    <div id="cleaningExportArea" class="export-surface cleaning-export">
+                        <div id="cleaningBoard" class="cleaning-board" aria-label="清洁表"></div>
+                    </div>
+                    <aside class="standards-panel" aria-label="6S管理标准">
+                        <div class="standards-head">
+                            <p class="section-kicker">Standard</p>
+                            <h3>教室6S执行标准</h3>
+                        </div>
+                        <div class="standard-group">
+                            <h4>执行时刻表</h4>
+                            <ul>
+                                <li><strong>大课间</strong><span>基础清理，恢复地面、桌椅、讲台、黑板秩序。</span></li>
+                                <li><strong>12:30</strong><span>午饭后重点清扫，处理碎屑、油污、垃圾桶。</span></li>
+                                <li><strong>放学后</strong><span>全区域深度清扫，组长反馈打卡。</span></li>
+                            </ul>
+                        </div>
+                        <div class="standard-group">
+                            <h4>岗位标准</h4>
+                            <ul>
+                                <li><strong>扫地</strong><span>地面无纸屑、明显灰尘和死角堆积。</span></li>
+                                <li><strong>拖地</strong><span>地面无污渍、明显水痕和打滑风险。</span></li>
+                                <li><strong>倒垃圾</strong><span>套袋规范，桶内无异味、无积垢。</span></li>
+                                <li><strong>黑板整理</strong><span>黑板、粉笔槽、讲台、窗台、柜体整洁无浮尘。</span></li>
+                            </ul>
+                        </div>
+                        <div class="standard-group">
+                            <h4>反馈机制</h4>
+                            <p>岗位自查、小组长复查、问题返工、确认通过。放学后30分钟内反馈值日组、问题、整改结果和清洁效果图。</p>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="pickerPanel" class="panel" data-panel="picker">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Picker</p>
+                        <h2>随机抽选系统</h2>
+                    </div>
+                    <div class="action-row">
+                        <button class="primary-btn" type="button" data-action="run-picker">开始抽选</button>
+                        <button class="soft-btn" type="button" data-action="clear-picker-results">清空结果</button>
+                    </div>
+                </div>
+                <div class="picker-workbench">
+                    <div class="control-panel">
+                        <label>
+                            抽选数量
+                            <input id="pickerCount" type="number" min="1" max="39" value="1">
+                        </label>
+                        <label>
+                            抽选轮数
+                            <input id="pickerRounds" type="number" min="1" max="20" value="1">
+                        </label>
+                        <label>
+                            重复规则
+                            <select id="pickerRepeatMode">
+                                <option value="taskUnique">同次任务不重复</option>
+                                <option value="roundUnique">每轮内不重复</option>
+                                <option value="free">完全可重复</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div id="pickerResults" class="picker-results" aria-live="polite">
+                        <div class="empty-state">设置数量和轮数后开始抽选。</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="settingsPanel" class="panel" data-panel="settings">
+                <div class="section-head">
+                    <div>
+                        <p class="section-kicker">Settings</p>
+                        <h2>完整配置中心</h2>
+                    </div>
+                    <div class="action-row">
+                        <button class="primary-btn" type="button" data-action="save-settings">保存设置</button>
+                        <button class="soft-btn" type="button" data-action="discard-settings">放弃更改</button>
+                        <button class="danger-btn" type="button" data-action="reset-state">重置系统</button>
+                    </div>
+                </div>
+                <div class="settings-grid">
+                    <section class="settings-block">
+                        <h3>自动保存</h3>
+                        <p>通过本地服务绑定 JSON 文件后，系统会在打开时自动读取，并在更改后自动写入。</p>
+                        <div class="path-card">
+                            <span>当前保存文件</span>
+                            <strong id="backupPathStatus">未绑定</strong>
+                        </div>
+                        <div class="inline-actions">
+                            <button class="primary-btn" type="button" data-action="select-backup-file">选择保存文件</button>
+                            <button class="soft-btn" type="button" data-action="refresh-backup-status">刷新状态</button>
+                        </div>
+                    </section>
+
+                    <section class="settings-block">
+                        <h3>学生名单</h3>
+                        <p>每行一个姓名。保存后会同步座位、清洁和抽选名单。</p>
+                        <textarea id="studentsTextArea" rows="12" spellcheck="false"></textarea>
+                        <div class="inline-actions">
+                            <button class="primary-btn" type="button" data-action="save-students">保存名单</button>
+                            <button class="soft-btn" type="button" data-action="restore-default-students">恢复默认名单</button>
+                        </div>
+                    </section>
+
+                    <section class="settings-block">
+                        <h3>座位设置</h3>
+                        <label>
+                            行轮换模式
+                            <select id="rowModeSelect">
+                                <option value="swapHalves">前后三排整体互换</option>
+                                <option value="fullCycle">全班六行循环</option>
+                            </select>
+                        </label>
+                        <label>
+                            列轮换方向
+                            <select id="columnDirectionSelect">
+                                <option value="right">向右轮换</option>
+                                <option value="left">向左轮换</option>
+                            </select>
+                        </label>
+                        <label class="toggle-line">
+                            <input id="includeSpecialAuto" type="checkbox">
+                            <span>特殊座位参与随机和轮换</span>
+                        </label>
+                        <div class="inline-actions">
+                            <button class="soft-btn" type="button" data-action="reset-seat-locks">解除全部锁定</button>
+                        </div>
+                    </section>
+
+                    <section class="settings-block">
+                        <h3>清洁设置</h3>
+                        <label>
+                            免值日名单
+                            <textarea id="excludedTextArea" rows="4" spellcheck="false"></textarea>
+                        </label>
+                        <div id="classroomRoleSettings" class="role-settings"></div>
+                        <div id="studioRoleSettings" class="role-settings"></div>
+                        <div class="inline-actions">
+                            <button class="primary-btn" type="button" data-action="save-cleaning-settings">保存清洁设置</button>
+                            <button class="soft-btn" type="button" data-action="generate-cleaning">按设置重新生成</button>
+                        </div>
+                    </section>
+
+                    <section class="settings-block">
+                        <h3>抽选设置</h3>
+                        <label>
+                            默认抽选数量
+                            <input id="pickerCountSetting" type="number" min="1" max="39">
+                        </label>
+                        <label>
+                            默认抽选轮数
+                            <input id="pickerRoundsSetting" type="number" min="1" max="20">
+                        </label>
+                        <label>
+                            默认重复规则
+                            <select id="pickerRepeatSetting">
+                                <option value="taskUnique">同次任务不重复</option>
+                                <option value="roundUnique">每轮内不重复</option>
+                                <option value="free">完全可重复</option>
+                            </select>
+                        </label>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="settingsLeaveDialog" class="modal-backdrop" hidden>
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsLeaveTitle">
+            <p class="section-kicker">Unsaved</p>
+            <h3 id="settingsLeaveTitle">设置更改尚未保存</h3>
+            <p>要保存当前设置后离开，还是放弃这次更改？</p>
+            <div class="modal-actions">
+                <button class="primary-btn" type="button" data-action="confirm-save-settings-leave">保存并离开</button>
+                <button class="soft-btn" type="button" data-action="confirm-discard-settings-leave">放弃更改</button>
+                <button class="soft-btn" type="button" data-action="cancel-settings-leave">继续编辑</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="syncIndicator" class="sync-indicator" data-status="loading">
+        <span class="sync-cloud">☁</span>
+        <span id="syncText">正在连接</span>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
