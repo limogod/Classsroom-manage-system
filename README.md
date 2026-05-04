@@ -84,23 +84,4 @@ dist\24美术2班常规管理系统\24美术2班常规管理系统.exe
 .classroom-manager-config.example.json
 ```
 
-## 上传 GitHub
 
-如果本机尚未安装 Git，请先安装 Git for Windows，然后在项目根目录执行：
-
-```bat
-git init
-git add .
-git commit -m "Initial classroom manager project"
-git branch -M main
-git remote add origin <你的私有仓库地址>
-git push -u origin main
-```
-
-上传前建议检查：
-
-```bat
-git status
-```
-
-确认没有提交 `.classroom-manager-config.json`、`__pycache__/`、`build/`、`dist/` 或 Python 安装器。
